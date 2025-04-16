@@ -3,14 +3,14 @@ name: mirror
 on: push
 
 env:
-    MIRROR_URL: 'git@github.com:EpitechPromo2028/B-OOP-400-PAR-4-1-interstonar-gregor.sternat.git'
+    MIRROR_URL: 'git@github.com:EpitechPromo2028/G-CNA-400-PAR-4-1-interstonar-gregor.sternat.git'
 
 jobs:
     push_to_mirror:
         name: Push to mirror
         runs-on: ubuntu-latest
 
-        if: github.repository != 'EpitechPromo2028/B-OOP-400-PAR-4-1-interstonar-gregor.sternat' && github.ref == 'refs/heads/main'
+        if: github.repository != 'EpitechPromo2028/B-CNA-400-PAR-4-1-interstonar-gregor.sternat' && github.ref == 'refs/heads/main'
         steps:
             - name: Checkout repository
               uses: actions/checkout@v4
