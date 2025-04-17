@@ -35,6 +35,10 @@ func Simulate(conf *config.GlobalConfig, position, velocity []float64) {
 		bodies = append(bodies, NewBody(bodyConf))
 	}
 
+	rock.Position.X += rock.Velocity.X * DeltaTime
+	rock.Position.Y += rock.Velocity.Y * DeltaTime
+	rock.Position.Z += rock.Velocity.Z * DeltaTime
+
 	for step := 1; step <= MaxSteps; step++ {
 		fmt.Printf("At time t = %d: rock is (%.3f, %.3f, %.3f)\n", step, rock.Position.X, rock.Position.Y, rock.Position.Z)
 
