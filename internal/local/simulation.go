@@ -42,23 +42,22 @@ func Simulate(conf *config.LocalConfig, position, velocity []float64) {
 		}
 	}
 
-	result := Raymarch(origin, direction, shapes)
 	positions := []Vector3{}
-
 	currentPos := origin
-	for step := 1; step <= result.Steps; step++ {
-		dist := MinDistance(currentPos, shapes)
-		if dist <= IntersectDist {
-			positions = append(positions, currentPos)
-			break
-		}
+	direction = Normalize(direction)
 
-		direction = Normalize(direction)
+	for step := 1; step <= MaxSteps; step++ {
+		dist := MinDistance(currentPos, shapes)
+
 		currentPos.X += direction.X * dist
 		currentPos.Y += direction.Y * dist
 		currentPos.Z += direction.Z * dist
 
 		positions = append(positions, currentPos)
+
+		if dist <= IntersectDist {
+			break
+		}
 		if dist >= MaxDistance {
 			break
 		}
@@ -68,9 +67,10 @@ func Simulate(conf *config.LocalConfig, position, velocity []float64) {
 		fmt.Printf("Step %d: (%.2f, %.2f, %.2f)\n", i+1, positions[i].X, positions[i].Y, positions[i].Z)
 	}
 
-	if result.Hit {
+	lastDist := MinDistance(positions[len(positions)-1], shapes)
+	if lastDist <= IntersectDist {
 		fmt.Println("Result: Intersection")
-	} else if result.Steps >= MaxSteps {
+	} else if len(positions) >= MaxSteps {
 		fmt.Println("Result: Time out")
 	} else {
 		fmt.Println("Result: Out of scene")
