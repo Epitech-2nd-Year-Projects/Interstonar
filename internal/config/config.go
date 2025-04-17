@@ -42,6 +42,10 @@ func LoadGlobalConfig(filename string) (*GlobalConfig, error) {
 			key := strings.TrimSpace(parts[0])
 			value := strings.TrimSpace(parts[1])
 
+			if commentIdx := strings.Index(value, "#"); commentIdx != -1 {
+				value = strings.TrimSpace(value[:commentIdx])
+			}
+
 			switch key {
 			case "name":
 				re := regexp.MustCompile(`"([^"]*)"`)
@@ -114,6 +118,10 @@ func LoadLocalConfig(filename string) (*LocalConfig, error) {
 			key := strings.TrimSpace(parts[0])
 			value := strings.TrimSpace(parts[1])
 
+			if commentIdx := strings.Index(value, "#"); commentIdx != -1 {
+                value = strings.TrimSpace(value[:commentIdx])
+            }
+
 			switch key {
 			case "type":
 				re := regexp.MustCompile(`"([^"]*)"`)
@@ -162,6 +170,10 @@ func LoadLocalConfig(filename string) (*LocalConfig, error) {
 }
 
 func parseVector(vec Vector3, value string) (Vector3, error) {
+	if commentIdx := strings.Index(value, "#"); commentIdx != -1 {
+		value = strings.TrimSpace(value[:commentIdx])
+	}
+    
 	reX := regexp.MustCompile(`x\s*=\s*([-+]?\d*\.?\d+(?:[eE][-+]?\d+)?)`)
 	reY := regexp.MustCompile(`y\s*=\s*([-+]?\d*\.?\d+(?:[eE][-+]?\d+)?)`)
 	reZ := regexp.MustCompile(`z\s*=\s*([-+]?\d*\.?\d+(?:[eE][-+]?\d+)?)`)
