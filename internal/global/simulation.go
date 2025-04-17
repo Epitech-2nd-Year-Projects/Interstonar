@@ -36,7 +36,7 @@ func Simulate(conf *config.GlobalConfig, position, velocity []float64) {
 	}
 
 	for step := 1; step <= MaxSteps; step++ {
-		fmt.Printf("At time t = %d: rock is (%3.f, %3.f, %3.f)\n", step, rock.Position.X, rock.Position.Y, rock.Position.Z)
+		fmt.Printf("At time t = %d: rock is (%.3f, %.3f, %.3f)\n", step, rock.Position.X, rock.Position.Y, rock.Position.Z)
 
 		for _, body := range bodies {
 			rockBody := Body{
