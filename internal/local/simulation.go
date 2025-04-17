@@ -64,6 +64,9 @@ func Simulate(conf *config.LocalConfig, position, velocity []float64) {
 	}
 	maxStepsToShow := math.Min(float64(len(positions)), 25)
 	for i := 0; i < int(maxStepsToShow); i++ {
+		if i == 0 {
+			fmt.Printf("\n")
+		}
 		fmt.Printf("Step %d: (%.2f, %.2f, %.2f)\n", i+1, positions[i].X, positions[i].Y, positions[i].Z)
 	}
 
