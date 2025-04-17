@@ -1,1 +1,78 @@
 package local
+
+import (
+	"fmt"
+	"interstonar/internal/config"
+	. "interstonar/internal/utils"
+	"math"
+)
+
+func Simulate(conf *config.LocalConfig, position, velocity []float64) {
+	origin := Vector3{
+		X: position[0],
+		Y: position[1],
+		Z: position[2],
+	}
+	direction := Vector3{
+		X: velocity[0],
+		Y: velocity[1],
+		Z: velocity[2],
+	}
+
+	fmt.Printf("Rock thrown at the point (%.2f, %.2f, %.2f) and parallel to the vector (%.2f, %.2f, %.2f)\n", origin.X, origin.Y, origin.Z, direction.X, direction.Y, direction.Z)
+
+	var shapes []Shape
+	for _, shapeConf := range conf.Bodies {
+		shape := NewShape(shapeConf)
+		shapes = append(shapes, shape)
+
+		switch shape.Type {
+		case ShapeSphere:
+			fmt.Printf("Sphere of radius %.2f at position (%.2f, %.2f, %.2f)\n", shape.Radius, shape.Position.X, shape.Position.Y, shape.Position.Z)
+		case ShapeCylinder:
+			if shape.Height > 0 {
+				fmt.Printf("Cylinder of radius %.2f and height %.2f at position (%.2f, %.2f, %.2f)\n", shape.Radius, shape.Height, shape.Position.X, shape.Position.Y, shape.Position.Z)
+			} else {
+				fmt.Printf("Infinite cylinder of radius %.2f at position (%.2f, %.2f, %.2f)\n", shape.Radius, shape.Position.X, shape.Position.Y, shape.Position.Z)
+			}
+		case ShapeBox:
+			fmt.Printf("Box of dimensions (%.2f, %.2f, %.2f) at position (%.2f, %.2f, %.2f)\n", shape.Sides.X, shape.Sides.Y, shape.Sides.Z, shape.Position.X, shape.Position.Y, shape.Position.Z)
+		case ShapeTorus:
+			fmt.Printf("Torus of inner radius %.2f and outer radius %.2f at position (%.2f, %.2f, %.2f)\n", shape.InnerRadius, shape.OuterRadius, shape.Position.X, shape.Position.Y, shape.Position.Z)
+		}
+	}
+
+	result := Raymarch(origin, direction, shapes)
+	positions := []Vector3{}
+
+	currentPos := origin
+	for step := 1; step <= result.Steps; step++ {
+		dist := MinDistance(currentPos, shapes)
+		if dist <= IntersectDist {
+			positions = append(positions, currentPos)
+			break
+		}
+
+		direction = Normalize(direction)
+		currentPos.X += direction.X * dist
+		currentPos.Y += direction.Y * dist
+		currentPos.Z += direction.Z * dist
+
+		positions = append(positions, currentPos)
+		if dist >= MaxDistance {
+			break
+		}
+	}
+	maxStepsToShow := math.Min(float64(len(positions)), 25)
+	for i := 0; i < int(maxStepsToShow); i++ {
+		fmt.Printf("Step %d: (%.2f, %.2f, %.2f)\n", i+1, positions[i].X, positions[i].Y, positions[i].Z)
+	}
+
+	if result.Hit {
+		fmt.Println("Result: Intersection")
+	} else if result.Steps >= MaxSteps {
+		fmt.Println("Result: Time out")
+	} else {
+		fmt.Println("Result: Out of scene")
+	}
+}
